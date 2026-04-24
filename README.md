@@ -90,3 +90,16 @@ Then, in main():
 ```
 
 Test your code by editing the input .txt files.
+
+## Part 2 (Project 1.2): Efficient Data Structures
+
+Replaced the adjacency matrix with an **incoming adjacency list**:
+- `adj[node]` now stores the list of nodes with edges pointing TO `node`
+- Space: O(V + E) instead of O(V²)
+- `get_majority_friend_opinions()`: O(in-degree) per call instead of O(V)
+- `update_opinions()` per iteration: O(V + E) instead of O(V²)
+- `edge_list` is freed after building the graph
+
+For a sparse social network (e.g. V=10,000, avg degree=6):
+this reduces memory from ~400 MB to ~240 KB and speeds up each
+iteration by ~1600×.
