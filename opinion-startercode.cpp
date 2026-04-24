@@ -20,14 +20,18 @@ vector<vector<int>> edge_list;
 
 void build_adj_matrix()
 {
-    adj = vector<vector<int>>(total_nodes, vector<int>(total_nodes, 0));
+    // adj[node] = list of in-neighbors (nodes with edges pointing TO node)
+    // O(V + E) space instead of O(V^2) for adjacency matrix
+    adj.assign(total_nodes, vector<int>());
 
-    for (int i = 0; i < edge_list.size(); i++)
+    for (auto& edge : edge_list)
     {
-        int source = edge_list[i][0];
-        int target = edge_list[i][1];
-        adj[source][target] = 1;
+        adj[edge[1]].push_back(edge[0]);
     }
+
+    // free edge_list memory; no longer needed
+    edge_list.clear();
+    edge_list.shrink_to_fit();
 }
 
 double calculate_fraction_of_ones()
@@ -50,15 +54,13 @@ int get_majority_friend_opinions(int node)
     int count0 = 0;
     int count1 = 0;
 
-    for (int i = 0; i < total_nodes; i++)
+    // iterate only actual in-neighbors: O(in-degree) instead of O(V)
+    for (int src : adj[node])
     {
-        if (adj[i][node] == 1)
-        {
-            if (opinions[i] == 1)
-                count1++;
-            else
-                count0++;
-        }
+        if (opinions[src] == 1)
+            count1++;
+        else
+            count0++;
     }
 
     if (count1 > count0)
@@ -83,7 +85,7 @@ bool update_opinions()
         }
     }
 
-    opinions = new_opinions;
+    opinions = std::move(new_opinions);
 
     return changed;
 }
